@@ -1,0 +1,15 @@
+*.class
+*.iml
+
+# Package Files #
+*.war
+*.ear
+
+# Folders #
+.idea
+dist
+out
+build
+/bin
+.classpath
+.project
