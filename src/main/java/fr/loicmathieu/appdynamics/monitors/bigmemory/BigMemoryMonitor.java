@@ -32,17 +32,22 @@ public class BigMemoryMonitor extends AManagedMonitor {
 
 	private static final String ROOT_PREFIX = "Custom Metrics|Cache|BigMemory|";
 	private static final String CLUSTER_PREFIX = "ServerArray|";
+	private static final String GLOBAL_STATS_PREFIX = CLUSTER_PREFIX + "Statistics|";
+	private static final String GLOBAL_HEALTH_PREFIX = CLUSTER_PREFIX + "Health|";
 
 	public TaskOutput execute(Map<String, String> params, TaskExecutionContext context) throws TaskExecutionException {
 		logger.info("Executing BigMemory Monitor...");
 		BigMemoryJMXWrapper wrapper = new BigMemoryJMXWrapper();
-		Map<String, Number> metrics;
 		try {
-			metrics = wrapper.gatherGlobalMetrics(params.get("host"), params.get("port"));
-			logger.info("Gathered metrics successfully. Size of metrics: " + metrics.size());
-			System.out.println(metrics);
-			sendMetrics(CLUSTER_PREFIX, metrics);
-			//TODO add stats for all caches + active/passif stats
+			Map<String, Number> globalMetrics = wrapper.gatherGlobalMetrics(params.get("host"), params.get("port"));
+			logger.info("Gathered global metrics successfully. Size of metrics: " + globalMetrics.size());
+			sendIndividualMetrics(GLOBAL_STATS_PREFIX, globalMetrics);
+
+			Map<String, Number> healthMetrics = wrapper.gatherHealthMetrics(params.get("host"), params.get("port"));
+			logger.info("Gathered health metrics successfully. Size of metrics: " + healthMetrics.size());
+			sendCollectiveMetrics(GLOBAL_HEALTH_PREFIX, healthMetrics);
+
+			//TODO add stats for all caches
 
 			//as everything went OK, we print Activity|up=1
 			sendMetric(CLUSTER_PREFIX + "Activity|up", 1,
@@ -54,7 +59,7 @@ public class BigMemoryMonitor extends AManagedMonitor {
 			return new TaskOutput("Task successful...");
 		}
 		catch (Exception e) {
-			logger.error("Exception: ", e);
+			logger.error("Exception while exucuting BigMemory Monitor : ", e);
 		}
 
 		return new TaskOutput("Task failed with errors");
@@ -65,13 +70,25 @@ public class BigMemoryMonitor extends AManagedMonitor {
 	 *
 	 * @param metrics
 	 */
-	private void sendMetrics(String prefix, Map<String, Number> metrics) {
+	private void sendIndividualMetrics(String prefix, Map<String, Number> metrics) {
+		System.out.println(metrics);
 		for(Entry<String, Number> entry : metrics.entrySet()){
 			String name = entry.getKey();
 			Number value = entry.getValue();
 			sendMetric(prefix + name , value, MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
 					MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,
 					MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_INDIVIDUAL);
+		}
+	}
+
+	private void sendCollectiveMetrics(String prefix, Map<String, Number> metrics) {
+		System.out.println(metrics);
+		for(Entry<String, Number> entry : metrics.entrySet()){
+			String name = entry.getKey();
+			Number value = entry.getValue();
+			sendMetric(prefix + name , value, MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
+					MetricWriter.METRIC_TIME_ROLLUP_TYPE_AVERAGE,
+					MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
 		}
 	}
 

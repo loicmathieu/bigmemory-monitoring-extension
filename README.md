@@ -6,14 +6,16 @@ This extension works only with the standalone machine agent.
 ## Use Case
 
 BigMemory is an enterprise distributed cache made by Terracotta (a division of Software AG) on top of the well known Ehcache framework (which is a standards-based cache for boosting performance, offloading your database, and simplifying scalability).
+
 The bigmemory-monitoring extension gathers metrics for a specific BigMemory server (aka BigMemory Max) and sends them to the AppDynamics Metric Browser. 
 It's important that all the nodes of the cluster (the server array) use the extension.
+
 It has been tested with both BigMemory Max version 4.0.x and 4.1.x.
 
 ## Installation
 <ol>
-	<li>Gather the latest BigMemoryMonitor zip file from the dist directory</li>
-	<li>Deploy the file BigMemoryMonitor.zip found in the 'dist' directory into the &lt;machineagent install dir&gt;/monitors/ directory.</li>
+	<li>Gather the latest BigMemoryMonitor zip file from the 'releases' directory</li>
+	<li>Deploy the file BigMemoryMonitor-x.x.x.zip found in the 'releases' directory into the &lt;machineagent install dir&gt;/monitors/ directory.</li>
 	<li>Unzip the deployed file.</li>
 	<li>
 		Open &lt;machineagent install dir&gt;/monitors/BigMemoryMonitor/monitor.xml and configure the BigMemory parameters.

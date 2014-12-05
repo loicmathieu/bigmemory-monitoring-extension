@@ -24,8 +24,12 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 
+import org.apache.log4j.Logger;
+
 
 public class BigMemoryJMXWrapper {
+	private static final Logger logger = Logger.getLogger(BigMemoryJMXWrapper.class.getName());
+
 	/*
 	 * Object Name naming schema from Terracotta documentation :
 	 * CacheManager - "net.sf.ehcache:type=CacheManager,name=<CacheManager>"
@@ -71,5 +75,72 @@ public class BigMemoryJMXWrapper {
 				connector.close();
 			}
 		}
+	}
+
+	public Map<String, Number> gatherHealthMetrics(String host, String port) {
+		Map<String, Number> metrics = new HashMap<String, Number>();
+		JMXConnector connector = null;
+
+		try {
+			connector = JmxUtils.connect(host, port, null, null);
+			MBeanServerConnection connection = connector.getMBeanServerConnection();
+
+			//gather cluster information
+			ObjectName bigMemory = new ObjectName("org.terracotta.internal:type=Terracotta Server,name=Terracotta Server");
+
+			//health status
+			metrics.put("up", 1);
+			Boolean active = (Boolean) connection.getAttribute(bigMemory, "Active");
+			String state = (String) connection.getAttribute(bigMemory, "State");
+			if(active){
+				metrics.put("Active", 1);
+				metrics.put("Passive", 0);
+				if("ACTIVE-COORDINATOR".equals(state)){//should be ACTIVE-COORDINATOR for active state
+					metrics.put("Healthy", 1);
+				}
+				else {
+					metrics.put("Healthy", 0);
+				}
+			}
+			else {
+				metrics.put("Active", 0);
+				metrics.put("Passive", 1);
+				if("PASSIVE-STANDBY".equals(state)){//should be PASSIVE-STANDBY for passive state
+					metrics.put("Healthy", 1);
+				}
+				else {
+					metrics.put("Healthy", 0);
+				}
+			}
+
+			//heap memory
+			Long maxMemory = (Long) connection.getAttribute(bigMemory, "MaxMemory");
+			metrics.put("MaxHeapMemory", maxMemory);
+			Long usedMemory = (Long) connection.getAttribute(bigMemory, "UsedMemory");
+			metrics.put("UsedHeapMemory", usedMemory);
+
+			//client count
+			ObjectName dso = new ObjectName("org.terracotta:type=Terracotta Server,name=DSO");
+			Integer clientCount = (Integer) connection.getAttribute(dso, "ActiveLicensedClientCount");
+			metrics.put("ActiveClientCount", clientCount);
+		}
+		catch(Exception e){
+			logger.error("Unable to gather health metrics from BigMemory", e);
+			if(! metrics.containsKey("up")){
+				metrics.put("up", 0);
+			}
+		}
+		finally  {
+			if(connector != null){
+				try {
+					connector.close();
+				}
+				catch (IOException e) {
+					logger.error(e);
+				}
+			}
+		}
+
+		return metrics;
 	}
 }
