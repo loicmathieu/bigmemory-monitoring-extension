@@ -29,6 +29,7 @@ It has been tested with both BigMemory Max version 4.0.x and 4.1.x.
 
 ## ServerArray Metrics
 All the following metrics are available under the ServerArray path.
+
 |Metric Name           | Description     |
 |----------------------|-----------------|
 |EvictionRate    	   | Rate of evictions from the cache |
@@ -41,6 +42,7 @@ All the following metrics are available under the ServerArray path.
 |OffheapUsedSize       | The currently used size of the offheap store |
 
 Some availability metrics are available under the ServerArray|Availability path :
+
 |Metric Name           | Description     |
 |----------------------|-----------------|
 |up    	   | Wether or not the node is up : 1 means up |
