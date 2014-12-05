@@ -14,7 +14,7 @@ It has been tested with both BigMemory Max version 4.0.x and 4.1.x.
 
 ## Installation
 <ol>
-	<li>Gather the latest BigMemoryMonitor-x.x.x zip file from the [releases](https://github.com/loicmathieu/bigmemory-monitoring-extension/releases) page</li>
+	<li>Gather the latest BigMemoryMonitor-x.x.x zip file from the Releases page : https://github.com/loicmathieu/bigmemory-monitoring-extension/releases</li>
 	<li>Deploy it into the &lt;machineagent install dir&gt;/monitors/ directory.</li>
 	<li>Unzip the deployed file.</li>
 	<li>
