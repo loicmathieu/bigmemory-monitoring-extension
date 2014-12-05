@@ -26,7 +26,13 @@ import javax.management.remote.JMXConnector;
 
 import org.apache.log4j.Logger;
 
-
+/**
+ * JMXWrapper for BigMemory JMX beans.
+ * Access BigMemory management API throught JMX and retrieve metrics to send to appdynamics.
+ *
+ * @author lmathieu
+ *
+ */
 public class BigMemoryJMXWrapper {
 	private static final Logger logger = Logger.getLogger(BigMemoryJMXWrapper.class.getName());
 
@@ -36,6 +42,19 @@ public class BigMemoryJMXWrapper {
 	 * Cache - "net.sf.ehcache:type=Cache,CacheManager=<cacheManagerName>,name=<cacheName>"
 	 * CacheConfiguration - "net.sf.ehcache:type=CacheConfiguration,CacheManager=<cacheManagerName>,name=<cacheName>"
 	 * CacheStatistics - "net.sf.ehcache:type=CacheStatistics,CacheManager=<cacheManagerName>,name=<cacheName>"
+	 */
+
+
+	/**
+	 * Gather cluster global statistical metrics.
+	 *
+	 * @param host host of the BigMemory server.
+	 * @param port jmx port of the Bigmemory server.
+	 *
+	 * @return metrics to report to appdynamics controller
+	 *
+	 * @throws IOException
+	 * @throws JMException
 	 */
 	public Map<String, Number> gatherGlobalMetrics(String host, String port) throws IOException, JMException {
 		Map<String, Number> metrics = new HashMap<String, Number>();
@@ -77,6 +96,18 @@ public class BigMemoryJMXWrapper {
 		}
 	}
 
+
+	/**
+	 * Gather node health metrics.
+	 *
+	 * @param host host of the BigMemory server.
+	 * @param port jmx port of the Bigmemory server.
+	 *
+	 * @return metrics to report to appdynamics controller
+	 *
+	 * @throws IOException
+	 * @throws JMException
+	 */
 	public Map<String, Number> gatherHealthMetrics(String host, String port) {
 		Map<String, Number> metrics = new HashMap<String, Number>();
 		JMXConnector connector = null;

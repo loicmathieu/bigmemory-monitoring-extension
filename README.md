@@ -14,8 +14,8 @@ It has been tested with both BigMemory Max version 4.0.x and 4.1.x.
 
 ## Installation
 <ol>
-	<li>Gather the latest BigMemoryMonitor zip file from the 'releases' directory</li>
-	<li>Deploy the file BigMemoryMonitor-x.x.x.zip found in the 'releases' directory into the &lt;machineagent install dir&gt;/monitors/ directory.</li>
+	<li>Gather the latest BigMemoryMonitor-x.x.x zip file from the [releases](https://github.com/loicmathieu/bigmemory-monitoring-extension/releases) page</li>
+	<li>Deploy it into the &lt;machineagent install dir&gt;/monitors/ directory.</li>
 	<li>Unzip the deployed file.</li>
 	<li>
 		Open &lt;machineagent install dir&gt;/monitors/BigMemoryMonitor/monitor.xml and configure the BigMemory parameters.
@@ -29,8 +29,8 @@ It has been tested with both BigMemory Max version 4.0.x and 4.1.x.
 	<li>In the AppDynamics Metric Browser, look for: Application Infrastructure Performance | &lt;Tier&gt; | Custom Metrics | Cache | BigMemory</li>
 </ol>
 
-## ServerArray Metrics
-All the following metrics are available under the ServerArray path.
+## ServerArray metrics
+Statistic metrics are available under the ServerArray|Statistics path.
 
 |Metric Name           | Description     |
 |----------------------|-----------------|
@@ -43,11 +43,17 @@ All the following metrics are available under the ServerArray path.
 |OffheapReservedSize   | The reserved size of the offheap store |
 |OffheapUsedSize       | The currently used size of the offheap store |
 
-Some availability metrics are available under the ServerArray|Availability path :
+health metrics are available under the ServerArray|Health path :
 
 |Metric Name           | Description     |
 |----------------------|-----------------|
-|up    	   | Wether or not the node is up : 1 means up |
+|Active	   		|1 if the node is active (master), else 0 |
+|Passive		|1 if the node is passive (mirror), else 0 |
+|Healthy		|Check the state of the node, if active check that it's ACTIVE-COORDINATOR and if passive that it's PASSIVE-STANDBY. If OK return 1 else 0 |
+|up    	   		|Wether or not the node is up : 1 means up else 0 |
+|MaxHeapMemory	|Maximum heap memory (Java heap memory, not reporting native memory so not reporting offheap memory) |
+|UsedHeapMemory	|User heap memory (Java heap memory, not reporting native memory so not reporting offheap memory) |
+|ActiveClientCount	|Number of active clients |
 
 ##Contributing
 

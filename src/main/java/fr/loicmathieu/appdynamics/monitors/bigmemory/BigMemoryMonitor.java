@@ -26,7 +26,12 @@ import com.singularity.ee.agent.systemagent.api.TaskExecutionContext;
 import com.singularity.ee.agent.systemagent.api.TaskOutput;
 import com.singularity.ee.agent.systemagent.api.exception.TaskExecutionException;
 
-
+/**
+ * Appdynamics BigMemory Monitor
+ *
+ * @author lmathieu
+ *
+ */
 public class BigMemoryMonitor extends AManagedMonitor {
 	private static final Logger logger = Logger.getLogger(BigMemoryMonitor.class.getName());
 
@@ -35,6 +40,9 @@ public class BigMemoryMonitor extends AManagedMonitor {
 	private static final String GLOBAL_STATS_PREFIX = CLUSTER_PREFIX + "Statistics|";
 	private static final String GLOBAL_HEALTH_PREFIX = CLUSTER_PREFIX + "Health|";
 
+	/**
+	 * @inheritDoc
+	 */
 	public TaskOutput execute(Map<String, String> params, TaskExecutionContext context) throws TaskExecutionException {
 		logger.info("Executing BigMemory Monitor...");
 		BigMemoryJMXWrapper wrapper = new BigMemoryJMXWrapper();
@@ -49,12 +57,6 @@ public class BigMemoryMonitor extends AManagedMonitor {
 
 			//TODO add stats for all caches
 
-			//as everything went OK, we print Activity|up=1
-			sendMetric(CLUSTER_PREFIX + "Activity|up", 1,
-					MetricWriter.METRIC_AGGREGATION_TYPE_OBSERVATION,
-					MetricWriter.METRIC_TIME_ROLLUP_TYPE_SUM,
-					MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
-
 			logger.info("Printed metrics successfully");
 			return new TaskOutput("Task successful...");
 		}
@@ -65,10 +67,12 @@ public class BigMemoryMonitor extends AManagedMonitor {
 		return new TaskOutput("Task failed with errors");
 	}
 
+
 	/**
-	 * Iterate over all metrics and send them to appdynamics controller
+	 * Iterate over all metrics and send them to appdynamics controller for individual metrics
 	 *
 	 * @param metrics
+	 * @param prefix prefix name for the metric
 	 */
 	private void sendIndividualMetrics(String prefix, Map<String, Number> metrics) {
 		System.out.println(metrics);
@@ -81,6 +85,13 @@ public class BigMemoryMonitor extends AManagedMonitor {
 		}
 	}
 
+
+	/**
+	 * Iterate over all metrics and send them to appdynamics controller for collective metrics
+	 *
+	 * @param metrics
+	 * @param prefix prefix name for the metric
+	 */
 	private void sendCollectiveMetrics(String prefix, Map<String, Number> metrics) {
 		System.out.println(metrics);
 		for(Entry<String, Number> entry : metrics.entrySet()){
@@ -91,6 +102,7 @@ public class BigMemoryMonitor extends AManagedMonitor {
 					MetricWriter.METRIC_CLUSTER_ROLLUP_TYPE_COLLECTIVE);
 		}
 	}
+
 
 	/**
 	 * Returns the metric to the AppDynamics Controller.
